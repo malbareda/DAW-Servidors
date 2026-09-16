@@ -1,0 +1,22 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>marc</groupId>
+  <artifactId>Hibernate</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+<properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+</properties>
+  <dependencies><!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
+	<dependency>
+	    <groupId>org.hibernate.orm</groupId>
+	    <artifactId>hibernate-core</artifactId>
+	    <version>6.6.1.Final</version>
+	</dependency>
+			<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>8.0.26</version>
+		</dependency>
+   </dependencies>
+</project>
