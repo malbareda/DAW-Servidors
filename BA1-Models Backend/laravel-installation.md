@@ -56,30 +56,28 @@ Editeu el fitxer `.env` del vostre projecte:
   DB_PASSWORD=la_vostra_contrasenya
   ```
 
-### 7. Instal·lar Laravel UI i configurar Bootstrap amb Autenticació
-Per afegir una interfície d'usuari amb Bootstrap i el sistema d'autenticació de Laravel:
+### 7. Instal·lar Laravel Breeze (autenticació)
+Breeze és el paquet oficial de Laravel per afegir autenticació (login, registre, recuperació de contrasenya). Genera controladors, vistes i rutes netes i fàcils d'entendre.
 
-1. Instal·leu el paquet Laravel UI:
+1. Instal·leu Breeze com a dependència de desenvolupament:
 ```
-composer require laravel/ui
-```
-
-2. Genereu l'scaffolding de Bootstrap amb autenticació:
-```
-php artisan ui bootstrap --auth
+composer require laravel/breeze --dev
 ```
 
-3. Instal·leu les dependències de frontend:
+2. Executeu l'instal·lador amb Blade (vistes clàssiques de servidor):
+```
+php artisan breeze:install blade
+```
+
+3. Instal·leu les dependències de frontend i compileu:
 ```
 npm install
+npm run build
 ```
 
-4. Compileu els assets:
-```
-npm run dev
-```
+Això generarà les vistes d'autenticació, els controladors, les rutes i un layout base amb Tailwind CSS.
 
-Això instal·larà Bootstrap i generarà les vistes, controladors i rutes necessàries per al sistema d'autenticació (login, registre, recuperació de contrasenya, etc.).
+> **Nota sobre laravel/ui**: en tutorials antics trobareu `composer require laravel/ui` + `php artisan ui bootstrap --auth`. Això era l'estàndard fins a Laravel 8, però avui dia `laravel/ui` està en mode manteniment (només rep correccions de seguretat). Nosaltres fem servir **Breeze** perquè és l'opció recomanada per la documentació oficial, el codi generat és més net, i utilitza FormRequests que és el patró que aprendreu. Si en algun moment necessiteu Bootstrap en lloc de Tailwind, podeu canviar les classes CSS al layout sense problemes — el sistema d'auth funciona igual.
 
 ### 8. Executar migracions per a l'autenticació
 Després d'instal·lar l'autenticació, necessiteu migrar les taules d'usuaris a la base de dades:
@@ -92,7 +90,9 @@ Finalment, torneu a iniciar el servidor de desenvolupament:
 ```
 php artisan serve
 ```
-Aquest comandament iniciarà un servidor local a `http://127.0.0.1:8000`. Obriu aquesta URL al vostre navegador i hauríeu de veure la pàgina de benvinguda de Laravel amb els enllaços d'autenticació.
+Aquest comandament iniciarà un servidor local a `http://127.0.0.1:8000`. Obriu aquesta URL al vostre navegador i hauríeu de veure la pàgina de benvinguda de Laravel amb els enllaços d'autenticació (Register i Login a la cantonada superior dreta).
+
+Verifiqueu que podeu registrar un usuari i fer login. **Si l'auth no funciona, no continueu. Tot el que ve després depèn d'això.**
 
 ## Solució de problemes comuns
 
@@ -124,7 +124,13 @@ Si teniu errors en compilar els assets:
    rm -rf node_modules
    npm install
    ```
-3. Proveu amb: `npm run dev -- --force`
+3. Proveu amb: `npm run build` (en lloc de `npm run dev` si `dev` dona errors)
+
+### Breeze no genera les vistes
+Si després de `breeze:install blade` no veieu les vistes a `resources/views/auth/`:
+1. Comproveu que heu executat `npm install && npm run build`
+2. Si falta el layout, busqueu-lo a `resources/views/layouts/`
+3. Reinicieu el servidor amb `php artisan serve`
 
 ## Conclusions
-Ara teniu un entorn de Laravel funcionant correctament amb Bootstrap i autenticació, i esteu preparats per començar a desenvolupar la vostra aplicació web. Recordeu que Laravel disposa d'una excel·lent documentació oficial a [laravel.com](https://laravel.com/docs) i una gran comunitat que us pot ajudar amb qualsevol problema que trobeu.
+Ara teniu un entorn de Laravel funcionant correctament amb Breeze i autenticació, i esteu preparats per començar a desenvolupar la vostra aplicació web. Recordeu que Laravel disposa d'una excel·lent documentació oficial a [laravel.com](https://laravel.com/docs) i una gran comunitat que us pot ajudar amb qualsevol problema que trobeu.
