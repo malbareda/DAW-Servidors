@@ -27,21 +27,65 @@ class CiudadController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('ciudades.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'habitantes' => 'required|integer',
+            'pais' => 'required|string|max:255',
+            'superficie' => 'required|numeric',
+            'alcalde' => 'required|string|max:255',
+            'estat' => 'required|string',
+            'amic' => 'nullable|boolean',
+        ]);
+
+        $data = $request->all();
+        $data['amic'] = $request->has('amic');
+
+        Ciudad::create($data);
+
+        return redirect()->route('ciudades.index');
     }
+
+
+    public function bombardear(Request $request)
+    {
+        //RECIBO INFORMACION DE LA WEB
+        $nombreCiudad = $request->nombre;
+
+        //COJO DATOS
+        $ciudad = Ciudad::where('nombre',$nombreCiudad)->first();
+        $respuesta = "";
+
+        if($ciudad==null){
+            $respuesta = "No hay una ciudad con este nombre";
+        }
+
+        else if($ciudad->estado == 'destruido' || $ciudad->estado == 'abandonado'){
+            $respuesta = "Deja de gastar bombas";
+        }
+
+        else if($ciudad->amigo == true){
+            $respuesta = "¿No bombarderias a un amigo, verdad?";
+        }
+        else{
+            $ciudad->habitantes = $ciudad->habitantes-1000;
+            $ciudad-> estado = 'destruido';
+            $respuesta = "Ciudad bombardeada satisfactoriamente";
+            $ciudad->save(); //ESTO LO GUARDARA EN LA BASE DE DATOS
+        }
+
+        return view ('ciudades.bombardear', compact('ciudad','respuesta'));
+
+
+
+    }
+    
 
     /**
      * Display the specified resource.
