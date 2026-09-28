@@ -34,21 +34,25 @@ class CiudadController extends Controller
 
     public function store(Request $request)
     {
+        //OPCIONAL, LA VALIDACION, NO HACE FALTA QUE LA HAGAIS EN LA MINIPRACTICA
+        //PERO SI EN LA PRACTICA
         $request->validate([
             'nombre' => 'required|string|max:255',
             'habitantes' => 'required|integer',
             'pais' => 'required|string|max:255',
             'superficie' => 'required|numeric',
             'alcalde' => 'required|string|max:255',
-            'estat' => 'required|string',
-            'amic' => 'nullable|boolean',
+            'estado' => 'required|string',
+            'amigo' => 'nullable|boolean',
         ]);
 
         $data = $request->all();
-        $data['amic'] = $request->has('amic');
+        $data['amigo'] = $request->has('amigo');
 
+        //CREATE HACE UN INSERT DE ESO EN LA BD
         Ciudad::create($data);
 
+        //hago un redirect a una ruta conocida
         return redirect()->route('ciudades.index');
     }
 
@@ -85,16 +89,16 @@ class CiudadController extends Controller
 
 
     }
-    
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        $ciudad = Ciudad::findOrFail($id);
+        return view('ciudades.show', compact('ciudad'));
     }
-
     /**
      * Show the form for editing the specified resource.
      */

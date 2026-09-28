@@ -8,49 +8,48 @@
 
 <a href="{{ route('ciudades.index') }}">Tornar</a>
 
-@if($errors->any())
-    <ul>
-        @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-@endif
-
+<!-- Action te lleva a una ruta con POST casi siempre -->
+<!-- route es el nombre que le has puesto a la ruta tu mismo en web.php -->
 <form action="{{ route('ciudades.store') }}" method="POST">
+    <!-- esto  hay que ponerlo siempre-->
+    <!-- habeis oido hablar de cors -->
     @csrf
 
     <p>
         <label>Nombre:</label><br>
-        <input type="text" name="nombre" value="{{ old('nombre') }}">
+        <input type="text" name="nombre">
     </p>
     <p>
         <label>Habitantes:</label><br>
-        <input type="number" name="habitantes" value="{{ old('habitantes') }}">
+        <input type="number" name="habitantes">
     </p>
     <p>
         <label>País:</label><br>
-        <input type="text" name="pais" value="{{ old('pais') }}">
+        <input type="text" name="pais">
     </p>
     <p>
         <label>Superficie:</label><br>
-        <input type="number" step="0.01" name="superficie" value="{{ old('superficie') }}">
+        <input type="number" step="0.01" name="superficie">
     </p>
     <p>
         <label>Alcalde:</label><br>
-        <input type="text" name="alcalde" value="{{ old('alcalde') }}">
+        <input type="text" name="alcalde">
     </p>
     <p>
         <label>Estat:</label><br>
-        <select name="estat">
-            <option value="perfecte" {{ old('estat') == 'perfecte' ? 'selected' : '' }}>Perfecte</option>
-            <option value="destruit" {{ old('estat') == 'destruit' ? 'selected' : '' }}>Destruit</option>
-            <option value="en_guerra" {{ old('estat') == 'en_guerra' ? 'selected' : '' }}>En guerra</option>
-            <option value="abandonat" {{ old('estat') == 'abandonat' ? 'selected' : '' }}>Abandonat</option>
+        <select name="estado">
+            <option value="perfecto">Perfecte</option>
+            <option value="destruido">Destruit</option>
+            <option value="en_guerra">En guerra</option>
+            <option value="abandonado">Abandonat</option>
+            <option value="bombardeable">Bombardeable</option>
+            <option value="colonizable">Colonizable</option>
+
         </select>
     </p>
     <p>
         <label>
-            <input type="checkbox" name="amic" value="1" {{ old('amic') ? 'checked' : '' }}>
+            <input type="checkbox" name="amigo" value="1">
             Amic
         </label>
     </p>

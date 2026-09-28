@@ -18,6 +18,7 @@
         <th>Alcalde</th>
         <th>Amic</th>
         <th>Estat</th>
+        <th>Link</th>
     </tr>
     @foreach($ciudades as $lechota)
         <tr>
@@ -29,6 +30,7 @@
             <td>{{ $lechota->alcalde }}</td>
             <td>{{ $lechota->amigo ? 'Sí' : 'No' }}</td>
             <td>{{ $lechota->estado }}</td>
+            <td><a href="{{ route('ciudades.show', $lechota->id) }}">LINK</a></td>
         </tr>
     @endforeach
 </table>
