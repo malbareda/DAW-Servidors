@@ -102,17 +102,23 @@ class CiudadController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit (Ciudad $ciudad)
     {
-        //
+        return view('ciudades.edit', compact('ciudad'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Ciudad $ciudad)
     {
-        //
+        $ciudad->nombre = $request->nombre;
+        $ciudad->habitantes = $request->habitantes;
+        $ciudad->pais = $request->pais;
+        $ciudad->superficie = $request->superficie;
+        $ciudad->alcalde = $request->alcalde;
+        $ciudad->estado = $request->estado;
+        $ciudad->amigo = $request->has('amigo');
+        $ciudad->save();
+
+        return redirect()->route('ciudades.show', $ciudad);
     }
 
     /**
