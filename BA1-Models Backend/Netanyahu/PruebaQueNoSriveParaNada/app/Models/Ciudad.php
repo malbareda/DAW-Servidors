@@ -17,5 +17,14 @@ class Ciudad extends Model
         'amigo',
         'estado',
     ];
+
+    //como tiene varios usamos el plural
+    public function ejercitos()
+    {
+        return $this->hasMany(Ejercito::class);
+    }
     //
+
+    
+
 }

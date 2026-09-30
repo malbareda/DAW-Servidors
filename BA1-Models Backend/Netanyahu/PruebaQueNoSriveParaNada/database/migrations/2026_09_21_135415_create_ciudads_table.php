@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('alcalde');
             $table->boolean('amigo');
             $table->enum('estado', ['destruido','bombardeable','abandonado','perfecto','colonizable'])->default('colonizable');
+
             $table->timestamps();
         });
     }
