@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
         //los seeders se llaman siempre asi. Te lo vas copiando entre proyectos.
         $this->call([
             CiudadSeeder::class,
+            EjercitoSeeder::class,
+
         ]);
 
 

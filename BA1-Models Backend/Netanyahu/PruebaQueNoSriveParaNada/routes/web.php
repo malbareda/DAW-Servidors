@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CiudadController;
+use App\Http\Controllers\EjercitoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,4 +18,6 @@ Route::get('/ciudades/{ciudad}/edit', [CiudadController::class, 'edit'])->name('
 Route::put('/ciudades/{ciudad}', [CiudadController::class, 'update'])->name('ciudades.update');
 Route::delete('/ciudades/{ciudad}', [CiudadController::class, 'destroy'])->name('ciudades.destroy');
 
-
+Route::get('/ejercitos', [EjercitoController::class, 'index'])->name('ejercitos.index');
+Route::get('ejercitos/{ejercito}/invadir', [EjercitoController::class, 'invadirFormulario'])->name('ejercitos.invadir');
+Route::post('ejercitos/{ejercito}/invadir', [EjercitoController::class, 'invadir'])->name('ejercitos.invadido');
