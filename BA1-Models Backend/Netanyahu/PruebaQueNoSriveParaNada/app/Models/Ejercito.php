@@ -17,5 +17,12 @@ class Ejercito extends Model
         //hasMany 1-N (soy el 1)
         //hasOne 1-1 (soy el dominante)
         return $this->belongsTo(Ciudad::class);
+
+    }
+
+    public function genocidios()
+    {
+        return $this->belongsToMany(Genocidio::class);
+
     }
 }
