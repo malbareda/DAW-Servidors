@@ -15,14 +15,66 @@ class CiudadController extends Controller
         //RECIBO INFORMACION DE LA WEB
 
         //COJO DATOS
-        $ciudades = Ciudad::all();
+        //Totes les ciutats
+        //$ciudades = Ciudad::all();
+        //Totes les ciutats destruides
+        //wheres (camp, valor)->get();
+        //$ciudades = Ciudad::where('estado','colonizable')->get();
+        //Totes les ciutats amigues;
+        $ciudades = Ciudad::where('amigo', true)->get();
+        //ciutats ordenades per nombre d'habitants
+        //$ciudades = Ciudad::orderBy('habitantes','asc')->first();
+        //ciutats amb habitants majors que 500000
+        $ciudades = Ciudad::where('habitantes','<',500000)->get();
+        //ciutats amb habitants entre 100.000 i 1.000.000
+        $ciudades = Ciudad::whereBetween('habitantes',[100000,999999])->get();
+        //ciutats amb una variable
+
+        //$nom = "Sabadell";
+        //$ciudades = Ciudad::where('nombre',$nom)->get();
+
+        //ciutats que tenen com a minim un exercit
+        $ciudades = Ciudad::has('ejercitos')->get();
+        //ciutats sense exercits (perdo)
+        $ciudades = Ciudad::doesntHave('ejercitos')->get();
+
+
+        //ciutats amb els exercits carregats ja (eager loading)
+        $ciudades = Ciudad::with('ejercitos')->get();
+        //ciutat amb el nombre d'exercits que té (count)
+        $ciudades = Ciudad::with('ejercitos_count')->get();
+        //aqui podries accedir al numero d'exercits amb $ciudades
+
+
+        ///Crec que aixo no entra a la practica
+        //ciutat amb mes exercits
+        $ciudades = Ciudad::with('ejercitos_count')
+            ->orderBy('ejercitos_count','desc')
+            ->first();
+
+        //ciudades que tienen ejercito ordenadas por el tamaño del ejercito
+        $ciudad = Ciudad::has('ejercitos')
+            ->orderBy('ejercitos_soldados')
+            ->get();
+
+        //ciudades que empiezan por Sab
+        $ciudad = Ciudad::where('nombre', 'like', 'Sab%')->get();
+        //ciudades que acaban por Sab
+        $ciudad = Ciudad::where('nombre', 'like', '%sab')->get();
+
+
+
+
+
         $cosa = "eeeeeehhhhh hola";
         //PROCESO DATOS
+
+
 
         //DEVUELVO LOS DATOS A UNA VISTA (Frontend)
         //return view
         //primero le digo la vista que quiero acceder
-        //y en el compact le paso todas las variables que quiero que el frontend pueda acceder
+        //y en el compact le paso todas las variables que quiero que el frontend pueda accede
         return view('ciudades.index', compact('cosa','ciudades'));
 
     }

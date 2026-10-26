@@ -5,7 +5,6 @@ use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\EjercitoController;
 
 Route::get('/', function () {
-    return view('welcome');
 });
 
 //ROUTE:get o post, depende, (URL, CONTROLLER, 'FUNCION DEL CONTROLER')->(NOMBRE PARA REFERENCIARLO MAS TARDE DESDE UNA VISTA)
