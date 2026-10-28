@@ -36,6 +36,8 @@
         <label>Data i hora:</label><br>
         <!-- datetime-local saca un calendario con hora -->
         <input type="datetime-local" name="data_hora" value="{{ old('data_hora') }}">
+        <!-- AQUI SALEN 2 TIPOS DE ERROR: los de validate() (required, date)
+             y el del back()->withErrors(['data_hora' => ...]) del controller (artista ocupado) -->
         @error('data_hora')
             <br><span class="error">{{ $message }}</span>
         @enderror

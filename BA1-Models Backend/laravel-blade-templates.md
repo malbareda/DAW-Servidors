@@ -517,6 +517,85 @@ Ja ho hem vist als exemples de formularis:
        class="w-full border rounded p-2 @error('nom') border-red-500 bg-red-50 @enderror">
 ```
 
+### Errors propis des del controller: `withErrors` + `@error`
+
+`$request->validate()` comprova el format de les dades (que hi siguin, que siguin un número, que l'id existeixi...), però no pot comprovar **regles de negoci** com "no pots envair una ciutat amiga" o "aquest artista ja té un concert a aquesta hora". Per a això fas la comprovació tu mateix i, si falla, tornes al formulari amb un error propi:
+
+**Controller** (`EjercitoController@invadir`):
+
+```php
+public function invadir(Request $request, Ejercito $ejercito)
+{
+    // 1. Validació normal: si falla, Laravel fa el back() automàticament
+    $request->validate([
+        'ciudad_id' => 'required|exists:ciudades,id',
+    ]);
+
+    $ciudad = Ciudad::find($request->ciudad_id);
+
+    // 2. Validació de negoci: la fem nosaltres
+    if ($ciudad->amigo) {
+        return back()->withErrors([
+            'ciudad_id' => 'No pots envair una ciutat amiga.',
+        ])->withInput();
+    }
+
+    // Clau inventada: no correspon a cap camp del formulari
+    if ($ejercito->soldados < 100) {
+        return back()->withErrors([
+            'soldados' => 'L\'exèrcit necessita 100 soldats com a mínim.',
+        ])->withInput();
+    }
+
+    // ... si arribem aquí, tot és correcte
+}
+```
+
+**Vista** (`ejercitos/invadir.blade.php`):
+
+```html
+<form action="{{ route('ejercitos.invadido', $ejercito) }}" method="POST">
+    @csrf
+
+    {{-- Error amb clau inventada: el mostrem on vulguem --}}
+    @error('soldados')
+        <p class="text-red-500">{{ $message }}</p>
+    @enderror
+
+    <select name="ciudad_id">
+        @foreach($ciudades as $c)
+            <option value="{{ $c->id }}" {{ old('ciudad_id') == $c->id ? 'selected' : '' }}>
+                {{ $c->nombre }}
+            </option>
+        @endforeach
+    </select>
+    @error('ciudad_id')
+        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+
+    <button type="submit">Envair!</button>
+</form>
+```
+
+**Com es connecten les dues parts**:
+
+| Controller | Vista |
+|---|---|
+| `withErrors(['ciudad_id' => 'text'])` | `@error('ciudad_id')` → `{{ $message }}` val `'text'` |
+| `withErrors(['soldados' => 'text'])` | `@error('soldados')` |
+| `->withInput()` | `old('ciudad_id')` recupera el valor triat |
+| `back()` | torna a la pàgina del formulari |
+
+**Punts clau**:
+
+1. **La clau del `withErrors` ha de ser exactament la mateixa que la de l'`@error`**. Si poses `withErrors(['ciutat' => ...])` i a la vista `@error('ciudad_id')`, l'error no es veurà.
+2. **La clau pot ser inventada**. No cal que sigui el `name` d'un input: `'soldados'` no és cap camp del formulari, però `@error('soldados')` el mostra igualment. Útil per a errors generals que no són d'un camp concret.
+3. **Els errors de `validate()` i els de `withErrors` arriben al mateix lloc**. `@error('ciudad_id')` mostra tant el `required` de la validació com el "ciutat amiga" del controller. També surten tots a `$errors->all()`.
+4. **Sense `->withInput()`, `old()` torna buit** i l'usuari ha de tornar a omplir tot el formulari. `validate()` ja ho fa sol, però amb `withErrors` ho has de posar tu.
+5. **Sempre `return`**: `return back()->withErrors(...)`. Si oblides el `return`, el codi continua executant-se i l'acció es fa igualment.
+
+> Exemples reals: `PruebaQueNoSriveParaNada` (`EjercitoController@invadir`) i `minipractica` (`ConcertController@store`, artista amb dos concerts a la mateixa hora). Al controller, mira també la secció *Redirects amb dades flash* de `laravel-controllers-requests.md`.
+
 ## Badges i Rendering Condicional
 
 ### Badges amb classes dinàmiques

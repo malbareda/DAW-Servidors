@@ -43,6 +43,21 @@ class ConcertController extends Controller
             'tipus' => 'required|in:CONCERT,DJ_SET,SHOWCASE,ACUSTIC',
         ]);
 
+        //VALIDACION DE NEGOCIO: esto validate() no lo puede comprobar solo
+        //un artista no puede tener 2 conciertos a la misma hora
+        $ocupat = Concert::where('artista_id', $data['artista_id'])
+            ->where('data_hora', $data['data_hora'])
+            ->exists();
+
+        if ($ocupat) {
+            //back() vuelve al formulario
+            //withErrors: la clave ('data_hora') es la que luego pillo con @error('data_hora') en la vista
+            //withInput: para que old() siga funcionando y no se borre lo que habia escrito
+            return back()->withErrors([
+                'data_hora' => 'Aquest artista ja té un concert a aquesta data i hora.',
+            ])->withInput();
+        }
+
         Concert::create($data);
 
         return redirect()->route('concerts.index');

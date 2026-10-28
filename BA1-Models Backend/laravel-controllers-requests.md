@@ -301,6 +301,8 @@ return back()->withErrors(['nom' => 'Aquest nom ja existeix.'])
 
 **`->withInput()`** fa que `old('camp')` funcioni a la vista — conserva el que l'usuari havia escrit perquè no ho hagi de tornar a omplir tot.
 
+> Com es mostren aquests errors a la vista amb `@error`, i la relació clau ↔ `@error('clau')`: secció *Errors propis des del controller: `withErrors` + `@error`* de `laravel-blade-templates.md`.
+
 ## Passar Dades a les Vistes
 
 ### Formes equivalents

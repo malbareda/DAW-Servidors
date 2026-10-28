@@ -36,7 +36,37 @@ class EjercitoController extends Controller
     public function invadir(Request $request, Ejercito $ejercito){
         //dd DUMP AND DIE, mata el programa y muestra esto por pantalla
         //dd($request->ciudad_id);
+
+        //VALIDACION NORMAL: si falla, laravel ya hace el back() con los errores el solito
+        $request->validate([
+            'ciudad_id' => 'required|exists:ciudades,id',
+        ]);
+
         $ciudad = Ciudad::find($request->ciudad_id);
+
+        //VALIDACIONES DE NEGOCIO: esto validate() no lo puede comprobar
+        //back() vuelve al formulario
+        //withErrors: la clave ('ciudad_id') es la que luego pillo con @error('ciudad_id') en la vista
+        //withInput: para que old('ciudad_id') deje seleccionada la ciudad que habia elegido
+        if ($ciudad->estado == 'destruido' || $ciudad->estado == 'abandonado') {
+            return back()->withErrors([
+                'ciudad_id' => 'Aquesta ciutat ja està '.$ciudad->estado.', no cal envair-la.',
+            ])->withInput();
+        }
+
+        if ($ciudad->amigo) {
+            return back()->withErrors([
+                'ciudad_id' => 'No pots envair una ciutat amiga.',
+            ])->withInput();
+        }
+
+        //el error no tiene por que ser de un campo del formulario, me invento la clave 'soldados'
+        if ($ejercito->soldados < 100) {
+            return back()->withErrors([
+                'soldados' => 'L\'exèrcit només té '.$ejercito->soldados.' soldats, en necessita 100 com a mínim.',
+            ])->withInput();
+        }
+
         $ciudad->estado = 'destruido';
         $ejercito->soldados -= 100;
         $ciudad->habitantes -=1000;

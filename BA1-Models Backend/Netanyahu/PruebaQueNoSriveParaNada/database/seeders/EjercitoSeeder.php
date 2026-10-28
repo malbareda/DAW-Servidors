@@ -20,7 +20,7 @@ class EjercitoSeeder extends Seeder
             ['nombre' => 'Talibanes', 'soldados' => 3000, 'ciudad_id' => 1, 'created_at' => now(), 'updated_at' => now()],
             ['nombre' => 'ISIS', 'soldados' => 2000, 'ciudad_id' => 2, 'created_at' => now(), 'updated_at' => now()],
             ['nombre' => 'ETA', 'soldados' => 1500, 'ciudad_id' => 2, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Al-Qaeda', 'soldados' => 800, 'ciudad_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Al-Qaeda', 'soldados' => 20, 'ciudad_id' => 1, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 
