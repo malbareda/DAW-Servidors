@@ -1,0 +1,44 @@
+
+1. Crear el projecte
+
+composer create-project laravel/laravel examenB
+2. Instal·lar Breeze (Auth), des de dins de la carpeta examenB:
+
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+npm install
+npm run build
+3. Configurar la BD al .env (a mà, no és cap comanda):
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=biblioteca
+DB_USERNAME=root
+DB_PASSWORD=super3
+4. Models amb la seva migració (-m crea la migració alhora):
+
+php artisan make:model Llibre -ms
+php artisan make:model Prestec -ms
+php artisan make:model Bibliotecari -ms
+5. Migració de la taula intermèdia N-N (no té model, i el nom va en ordre alfabètic i en singular):
+
+php artisan make:migration create_bibliotecari_llibre_table
+6. Controladors
+
+php artisan make:controller LlibreController
+php artisan make:controller PrestecController
+php artisan make:controller BibliotecariController
+7. Seeders
+
+8. Les vistes: no hi ha comanda. Es crea a mà la carpeta resources/views/llibres/ amb els fitxers create.blade.php, modificar.blade.php, cataleg.blade.php i senseprestecs.blade.php.
+
+9. Crear les taules i omplir-les. Primer s’han d’haver escrit les migracions i els seeders. migrate:fresh esborra totes les taules i les torna a crear; --seed executa el DatabaseSeeder:
+
+php artisan migrate:fresh --seed
+Si la BD biblioteca no existeix, php artisan migrate et pregunta si la vols crear. Jo la vaig crear directament amb PHP.
+
+10. Comprovar les rutes i arrencar el servidor
+
+php artisan route:list
+php artisan serve
