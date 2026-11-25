@@ -30,13 +30,32 @@ public class MarianoContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
+        //FLUENT API
+        //hay propiedades que no se pueden definir por inferencia
+        //SQL decimal(3,2)
+        modelBuilder.Entity<CrimenesDeGuerra>() //Entity es tabla
+            .Property(cdg => cdg.numeroVictimas) //property es columna
+            .HasPrecision(6, 7); //000000.0000000 a 999999.9999999  //y luego defines lo que quieras.
+        
+        
+        
+        
+        
+        
         // 1-1: Curs <-> Professor (la FK és a Curs)
         modelBuilder.Entity<Castillo>()
             .HasOne(c => c.Rey)
             .WithOne(r => r.Castillo)
             .HasForeignKey<Castillo>(c => c.ReyID);
 
-        // N-N recursiva: Modul <-> Prerequisits
+        //N-N recursiva: Reyes <-> Reyes - Shipeos
+        modelBuilder.Entity<Rey>()
+            //PRIMERO EL HAS Y LUEGO EL WITH
+            .HasMany(r => r.ShipeoDominante)
+            .WithMany(r => r.ShipeoSumiso);
+        //SI QUIERES DEFINIR LA TABLA INTERMEDIA PONDRIAMOS UN USINGENTITY Y VERIAMOS LO TENEIS EN LOS APUNTES
+            
   /*      modelBuilder.Entity<Modul>()
             .HasMany(m => m.Prerequisits)
             .WithMany(m => m.EsPrerequisitDe)

@@ -861,11 +861,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ies\\RiderProjects\\SuperMarianoBros\\SuperMarianoBros\\SuperMarianoBros.csproj",
+      "projectUniqueName": "C:\\marc\\git\\BA2-ORM i API\\Entity Framework\\SuperMarianoBros\\SuperMarianoBros\\SuperMarianoBros.csproj",
       "projectName": "SuperMarianoBros",
-      "projectPath": "C:\\Users\\ies\\RiderProjects\\SuperMarianoBros\\SuperMarianoBros\\SuperMarianoBros.csproj",
+      "projectPath": "C:\\marc\\git\\BA2-ORM i API\\Entity Framework\\SuperMarianoBros\\SuperMarianoBros\\SuperMarianoBros.csproj",
       "packagesPath": "C:\\Users\\ies\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ies\\RiderProjects\\SuperMarianoBros\\SuperMarianoBros\\obj\\",
+      "outputPath": "C:\\marc\\git\\BA2-ORM i API\\Entity Framework\\SuperMarianoBros\\SuperMarianoBros\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -25,6 +25,12 @@ using (var ctx = new MarianoContext())
 
     var r1 = new Rey() { Nombre = "Bowser", Dictakdor = false };
     var r2 = new Rey() { Nombre = "Trakatrá", Dictakdor = true };
+    var r3 = new Rey() { Nombre = "Koquitas", Dictakdor = true };
+    var r4 = new Rey() { Nombre = "Aida", Dictakdor = true };
+    var r5 = new Rey() { Nombre = "Carrero Blanco", Dictakdor = true };
+    var r6 = new Rey() { Nombre = "el grande el señor con bigote si si si 6-7", Dictakdor = false };
+
+    
     
     r1.Castillo = c1;
     r2.Castillo = c2;
@@ -44,11 +50,21 @@ using (var ctx = new MarianoContext())
     r2.CrimenesDeGuerras.Add(cdg3);
     
     
+    r1.ShipeoDominante.Add(r3);
+    r3.ShipeoSumiso.Add(r1);
+    
+    r6.ShipeoSumiso.Add(r5);
+    r5.ShipeoDominante.Add(r6);
+    
+    r6.ShipeoSumiso.Add(r3);
+    r3.ShipeoDominante.Add(r6);
+    
+    
     //ESTOS OBJETOS QUE HEMOS CREADO DE MOMENTO SOLO SON OBJETOS, NO SON TABLAS
     //PARA SER TABLAS DEBEN AÑADIRSE AL DBSET
     
     ctx.Castillos.AddRange(c1,c2);
-    ctx.Reyes.AddRange(r1,r2);
+    ctx.Reyes.AddRange(r1,r2,r3,r4,r5,r6);
     ctx.Goombas.AddRange(g1,g2,g3,g4);
 
     ctx.SaveChanges();
@@ -117,6 +133,20 @@ using (var ctx = new MarianoContext())
     CrimenesDeGuerra puñal = ctx.CrimenesDeGuerras.Where(c => c.descripcion.Contains("puñal")).First();
     Console.WriteLine(puñal.Reyes.Count);
 
+    //Cuantos reyes han apuñalado a gente
+    Console.WriteLine("CUANTOS SHIPEOS TIENE EL SEÑOR CON BIGOTE?");
+    Rey bigote = ctx.Reyes.Where(r => r.Nombre.Contains("6-7")).First();
+    Console.WriteLine("Shipeos dominantes");
+    foreach (Rey d in bigote.ShipeoDominante)
+    {
+        Console.WriteLine(d.Nombre);
+    }
+
+    Console.WriteLine("Shipeos Sumisos");
+    foreach (Rey s in bigote.ShipeoSumiso)
+    {
+        Console.WriteLine(s.Nombre);
+    }
 
 
 

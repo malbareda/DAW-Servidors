@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+n4vpuFY7ZA=",
+  "dgSpecHash": "fN6VNk6A8gg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ies\\RiderProjects\\SuperMarianoBros\\SuperMarianoBros\\SuperMarianoBros.csproj",
+  "projectFilePath": "C:\\marc\\git\\BA2-ORM i API\\Entity Framework\\SuperMarianoBros\\SuperMarianoBros\\SuperMarianoBros.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ies\\.nuget\\packages\\castle.core\\5.2.1\\castle.core.5.2.1.nupkg.sha512",
     "C:\\Users\\ies\\.nuget\\packages\\microsoft.data.sqlite.core\\11.0.0\\microsoft.data.sqlite.core.11.0.0.nupkg.sha512",
