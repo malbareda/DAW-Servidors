@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SuperMarianoBros")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aaef7eba133d1f6183db86b65ad472df0763ce18")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+078983d65850f90da890e60b81df79582d161c15")]
 [assembly: System.Reflection.AssemblyProductAttribute("SuperMarianoBros")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SuperMarianoBros")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

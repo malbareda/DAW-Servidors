@@ -101,6 +101,55 @@ Permet configurar:
 - Precisió i escala per decimals
 - Suport Unicode per strings
 
+### HasPrecision en detall
+
+`HasPrecision(precisió, escala)` s'aplica a propietats `decimal` (i també `DateTime`/`TimeSpan`):
+
+- **Precisió**: nombre total de dígits (abans + després de la coma).
+- **Escala**: quants d'aquests dígits són decimals.
+
+```csharp
+modelBuilder.Entity<Nota>()
+    .Property(n => n.valor)
+    .HasPrecision(4, 2);    // decimal(4,2) -> de -99,99 a 99,99 (p. ex. 7,50 o 10,00)
+
+modelBuilder.Entity<Producte>()
+    .Property(p => p.Preu)
+    .HasPrecision(10, 2);   // decimal(10,2) -> fins a 99.999.999,99
+
+// DateTime/TimeSpan: només un paràmetre = decimals dels segons
+modelBuilder.Entity<Log>()
+    .Property(l => l.Data)
+    .HasPrecision(3);       // datetime2(3) -> mil·lisegons
+```
+
+**Per què cal?** Si no el poses, EF Core usa el valor per defecte del proveïdor (a SQL Server `decimal(18,2)`) i mostra l'avís *"No store type was specified for the decimal property..."*. A més, si l'escala és massa petita, la BD **arrodoneix/trunca** els decimals sense avisar.
+
+Equivalents:
+```csharp
+.HasColumnType("decimal(5,2)")      // Fluent API, tipus explícit
+[Precision(5, 2)]                   // Data Annotation (EF Core 6+)
+[Column(TypeName = "decimal(5,2)")] // Data Annotation clàssica
+```
+
+**Per a tots els decimals del model alhora (EF Core 6+):**
+```csharp
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+{
+    configurationBuilder.Properties<decimal>().HavePrecision(10, 2);
+    configurationBuilder.Properties<string>().HaveMaxLength(200);
+}
+```
+
+### Strings: longitud fixa i varchar
+```csharp
+modelBuilder.Entity<Estudiant>()
+    .Property(e => e.dni)
+    .HasMaxLength(9)
+    .IsFixedLength()        // char(9) en lloc de varchar(9)
+    .IsUnicode(false);      // varchar/char en lloc de nvarchar/nchar
+```
+
 ### Noms de Columna
 ```csharp
 modelBuilder.Entity<Professor>()
@@ -137,6 +186,147 @@ modelBuilder.Entity<Professor>()
     .Ignore(p => p.nomComplet);  // No es mapeja a la BD
 ```
 Equivalent a `[NotMapped]`.
+
+### Valor Únic (UNIQUE) i Índexs sobre una Propietat
+
+Una propietat no té `.IsUnique()` directament: la unicitat es defineix amb un **índex únic** (`HasIndex`). Veure també la secció d'Índexs.
+
+```csharp
+// Email únic
+modelBuilder.Entity<Professor>()
+    .HasIndex(p => p.email)
+    .IsUnique();
+
+// Combinació única (no es pot repetir la parella)
+modelBuilder.Entity<Inscripcio>()
+    .HasIndex(i => new { i.EstudiantID, i.ModulID })
+    .IsUnique();
+```
+Equivalent a `[Index(nameof(Email), IsUnique = true)]` sobre la classe.
+
+**Clau alternativa** (valor únic que, a més, pot ser destí d'una FK):
+```csharp
+modelBuilder.Entity<Estudiant>()
+    .HasAlternateKey(e => e.dni);   // UNIQUE + es pot referenciar des d'altres taules
+```
+
+### Enums com a text
+Per defecte un `enum` es guarda com a `int`. Per guardar-lo com a text:
+```csharp
+modelBuilder.Entity<Curs>()
+    .Property(c => c.Estat)
+    .HasConversion<string>()        // "Actiu", "Tancat"... en lloc de 0, 1
+    .HasMaxLength(20);
+```
+
+### Conversions de valor
+Transformen el valor entre C# i la BD (`HasConversion`):
+```csharp
+// bool <-> "S"/"N"
+modelBuilder.Entity<Curs>()
+    .Property(c => c.Actiu)
+    .HasConversion(
+        v => v ? "S" : "N",         // C# -> BD
+        v => v == "S");             // BD -> C#
+
+// Llista de strings guardada com a "a,b,c"
+modelBuilder.Entity<Professor>()
+    .Property(p => p.Etiquetes)
+    .HasConversion(
+        v => string.Join(',', v),
+        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+```
+
+### Valors Generats per la BD
+```csharp
+// Autonumèric (identity) explícit, amb inici i increment
+modelBuilder.Entity<Professor>()
+    .Property(p => p.ProfessorID)
+    .UseIdentityColumn(seed: 100, increment: 1);
+
+// Es genera en inserir
+modelBuilder.Entity<Modul>()
+    .Property(m => m.dataCreacio)
+    .HasDefaultValueSql("GETDATE()")
+    .ValueGeneratedOnAdd();
+
+// Es genera en inserir i en cada update (p. ex. data de modificació amb trigger)
+modelBuilder.Entity<Modul>()
+    .Property(m => m.dataModificacio)
+    .ValueGeneratedOnAddOrUpdate();
+
+// Columna calculada per la BD
+modelBuilder.Entity<Professor>()
+    .Property(p => p.nomComplet)
+    .HasComputedColumnSql("[nom] + ' ' + [cognom]", stored: true);
+```
+
+### Concurrència (control de versions)
+```csharp
+// Columna rowversion que EF comprova en cada UPDATE/DELETE
+modelBuilder.Entity<Professor>()
+    .Property(p => p.Versio)        // byte[]
+    .IsRowVersion();                // equivalent a [Timestamp]
+
+// Alternativa: comprovar una propietat concreta
+modelBuilder.Entity<Modul>()
+    .Property(m => m.horesSetmana)
+    .IsConcurrencyToken();          // equivalent a [ConcurrencyCheck]
+```
+Si algú altre ha modificat la fila entre la lectura i el `SaveChanges`, EF llança `DbUpdateConcurrencyException`.
+
+### Ordre de Columnes i Comentaris
+```csharp
+modelBuilder.Entity<Professor>()
+    .Property(p => p.nom)
+    .HasColumnOrder(1)
+    .HasComment("Nom de pila del professor");
+
+modelBuilder.Entity<Professor>()
+    .ToTable(t => t.HasComment("Professors del centre"));
+```
+
+### Propietats d'Ombra (Shadow Properties)
+Columnes que existeixen a la BD però **no** a la classe C#:
+```csharp
+modelBuilder.Entity<Professor>()
+    .Property<DateTime>("UltimaModificacio");
+
+// Accés des del codi
+ctx.Entry(professor).Property("UltimaModificacio").CurrentValue = DateTime.Now;
+var recents = ctx.Professor.Where(p => EF.Property<DateTime>(p, "UltimaModificacio") > data);
+```
+
+### Camps privats (Backing Fields)
+```csharp
+modelBuilder.Entity<Professor>()
+    .Property(p => p.Nom)
+    .HasField("_nom")
+    .UsePropertyAccessMode(PropertyAccessMode.Field);
+```
+
+### Resum Data Annotations ↔ Fluent API
+
+| Data Annotation | Fluent API |
+|---|---|
+| `[Table("X")]` | `.ToTable("X")` |
+| `[Key]` | `.HasKey(e => e.Id)` |
+| `[Required]` | `.IsRequired()` |
+| `[MaxLength(50)]` / `[StringLength(50)]` | `.HasMaxLength(50)` |
+| `[Column("x")]` | `.HasColumnName("x")` |
+| `[Column(TypeName = "decimal(5,2)")]` | `.HasColumnType("decimal(5,2)")` / `.HasPrecision(5, 2)` |
+| `[Precision(5, 2)]` | `.HasPrecision(5, 2)` |
+| `[Index(nameof(Email), IsUnique = true)]` | `.HasIndex(e => e.Email).IsUnique()` |
+| `[NotMapped]` | `.Ignore(e => e.Prop)` |
+| `[DatabaseGenerated(DatabaseGeneratedOption.None)]` | `.ValueGeneratedNever()` |
+| `[DatabaseGenerated(DatabaseGeneratedOption.Identity)]` | `.ValueGeneratedOnAdd()` |
+| `[DatabaseGenerated(DatabaseGeneratedOption.Computed)]` | `.ValueGeneratedOnAddOrUpdate()` / `.HasComputedColumnSql()` |
+| `[Timestamp]` | `.IsRowVersion()` |
+| `[ConcurrencyCheck]` | `.IsConcurrencyToken()` |
+| `[ForeignKey("X")]` | `.HasForeignKey(e => e.X)` |
+| `[InverseProperty]` | `.WithMany(x => x.Nav)` |
+| `[Comment("...")]` | `.HasComment("...")` |
+| `[Unicode(false)]` | `.IsUnicode(false)` |
 
 ## 4. Configuració de Relacions
 
@@ -339,6 +529,50 @@ modelBuilder.HasSequence<int>("OrderNumbers")
 modelBuilder.Entity<Comanda>()
     .Property(c => c.NumeroComanda)
     .HasDefaultValueSql("NEXT VALUE FOR OrderNumbers");
+```
+
+### Filtres Globals (Query Filters)
+
+Es apliquen automàticament a totes les consultes de l'entitat. Útil per a l'esborrat lògic (*soft delete*):
+
+```csharp
+modelBuilder.Entity<Curs>()
+    .HasQueryFilter(c => c.Actiu);
+
+// Per saltar-se el filtre en una consulta concreta:
+var tots = ctx.Curs.IgnoreQueryFilters().ToList();
+```
+
+### Tipus Propis (Owned Types)
+
+Una classe sense identitat pròpia que es guarda a les columnes de la taula de l'entitat propietària:
+
+```csharp
+public class Adreca { public string Carrer { get; set; } public string Ciutat { get; set; } }
+
+modelBuilder.Entity<Professor>()
+    .OwnsOne(p => p.Adreca, a =>
+    {
+        a.Property(x => x.Carrer).HasColumnName("adreca_carrer").HasMaxLength(100);
+        a.Property(x => x.Ciutat).HasColumnName("adreca_ciutat").HasMaxLength(50);
+    });
+```
+
+### Herència (TPH, TPT, TPC)
+
+```csharp
+// TPH (per defecte): una sola taula amb columna discriminadora
+modelBuilder.Entity<Persona>()
+    .HasDiscriminator<string>("Tipus")
+    .HasValue<Professor>("P")
+    .HasValue<Estudiant>("E");
+
+// TPT: una taula per cada classe
+modelBuilder.Entity<Professor>().ToTable("Professors");
+modelBuilder.Entity<Estudiant>().ToTable("Estudiants");
+
+// TPC: una taula per cada classe concreta, sense taula base
+modelBuilder.Entity<Persona>().UseTpcMappingStrategy();
 ```
 
 ### Vistes (Views)

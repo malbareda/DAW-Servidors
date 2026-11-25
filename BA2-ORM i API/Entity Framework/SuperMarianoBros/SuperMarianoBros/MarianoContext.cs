@@ -50,12 +50,32 @@ public class MarianoContext : DbContext
             .HasForeignKey<Castillo>(c => c.ReyID);
 
         //N-N recursiva: Reyes <-> Reyes - Shipeos
+        //Per poder sembrar (HasData) la taula intermitja, cal donar-li nom i columnes amb UsingEntity
         modelBuilder.Entity<Rey>()
             //PRIMERO EL HAS Y LUEGO EL WITH
             .HasMany(r => r.ShipeoDominante)
-            .WithMany(r => r.ShipeoSumiso);
-        //SI QUIERES DEFINIR LA TABLA INTERMEDIA PONDRIAMOS UN USINGENTITY Y VERIAMOS LO TENEIS EN LOS APUNTES
-            
+            .WithMany(r => r.ShipeoSumiso)
+            .UsingEntity<Dictionary<string, object>>("ReyShipeo",
+                right => right.HasOne<Rey>().WithMany().HasForeignKey("ShipeoDominanteID"),
+                left => left.HasOne<Rey>().WithMany().HasForeignKey("ReyID"));
+
+        //N-N Rey <-> CrimenesDeGuerra, tambe amb la taula intermitja anomenada
+        modelBuilder.Entity<Rey>()
+            .HasMany(r => r.CrimenesDeGuerras)
+            .WithMany(c => c.Reyes)
+            .UsingEntity<Dictionary<string, object>>("ReyCrimen",
+                right => right.HasOne<CrimenesDeGuerra>().WithMany().HasForeignKey("CrimenesDeGuerraID"),
+                left => left.HasOne<Rey>().WithMany().HasForeignKey("ReyID"));
+
+        //1-N: Goomba no te propietats FK, aixi que les nomenem (shadow FKs) per poder-les sembrar
+        modelBuilder.Entity<Goomba>()
+            .HasOne(g => g.Castillo).WithMany(c => c.Goombas).HasForeignKey("CastilloID");
+        modelBuilder.Entity<Goomba>()
+            .HasOne(g => g.Rey).WithMany(r => r.Goombas).HasForeignKey("ReyID");
+
+        //SEEDER: les dades inicials (veure Seed.cs)
+        Seed.Aplicar(modelBuilder);
+
   /*      modelBuilder.Entity<Modul>()
             .HasMany(m => m.Prerequisits)
             .WithMany(m => m.EsPrerequisitDe)

@@ -7,67 +7,9 @@ using (var ctx = new MarianoContext())
     ctx.Database.EnsureCreated();
 
 
-    //VAMOS A CREAR LOS OBJETOS
-    var g1 = new Goomba() { Nombre = "Barcenas", Altura = 0.45, Color = ColorGoomba.LLANTA_QUEMADA };
-    var g2 = new Goomba() { Nombre = "PacoFranco", Altura = 2, Color = ColorGoomba.PSOEIZADO };
-    var g3 = new Goomba() { Nombre = "PerroSanxe", Altura = 0.2, Color = ColorGoomba.CASTAÑO };
-    var g4 = new Goomba() { Nombre = "Anotop At", Altura = 4, Color = ColorGoomba.DORADO };
+    //LES DADES JA NO ES CREEN AQUI: les posa el SEEDER (Seed.cs, HasData) en fer EnsureCreated.
+    //Aixi cada execucio parteix sempre de les mateixes dades.
 
-    var c1 = new Castillo() { Nombre = "Castillo 8-4", Superficie = 67.67 };
-    c1.Goombas.Add(g1);
-    c1.Goombas.Add(g3);
-    
-    
-    var c2 = new Castillo() { Nombre = "Valle de los Caídos", Superficie = 19.36 };
-    c2.Goombas.Add(g2);
-    c2.Goombas.Add(g4);
-
-
-    var r1 = new Rey() { Nombre = "Bowser", Dictakdor = false };
-    var r2 = new Rey() { Nombre = "Trakatrá", Dictakdor = true };
-    var r3 = new Rey() { Nombre = "Koquitas", Dictakdor = true };
-    var r4 = new Rey() { Nombre = "Aida", Dictakdor = true };
-    var r5 = new Rey() { Nombre = "Carrero Blanco", Dictakdor = true };
-    var r6 = new Rey() { Nombre = "el grande el señor con bigote si si si 6-7", Dictakdor = false };
-
-    
-    
-    r1.Castillo = c1;
-    r2.Castillo = c2;
-
-    r1.Goombas = c1.Goombas;
-    r2.Goombas = c2.Goombas;
-
-    var cdg3 = new CrimenesDeGuerra() { descripcion = " Apuñalar a gente en centros educativos deltante de Marc", numeroVictimas = 1, fecha = DateTime.Now} ;
-    var cdg2 = new CrimenesDeGuerra() { descripcion = "Bombardear abuelas" , numeroVictimas = 50000, fecha = DateTime.Now};
-    var cdg1 = new CrimenesDeGuerra() { descripcion = "Robar un castillo y llevarselo al espacio" , numeroVictimas = 1, fecha = DateTime.Now};
-
-
-    r1.CrimenesDeGuerras.Add(cdg1);
-    r1.CrimenesDeGuerras.Add(cdg3);
-    
-    r2.CrimenesDeGuerras.Add(cdg2);
-    r2.CrimenesDeGuerras.Add(cdg3);
-    
-    
-    r1.ShipeoDominante.Add(r3);
-    r3.ShipeoSumiso.Add(r1);
-    
-    r6.ShipeoSumiso.Add(r5);
-    r5.ShipeoDominante.Add(r6);
-    
-    r6.ShipeoSumiso.Add(r3);
-    r3.ShipeoDominante.Add(r6);
-    
-    
-    //ESTOS OBJETOS QUE HEMOS CREADO DE MOMENTO SOLO SON OBJETOS, NO SON TABLAS
-    //PARA SER TABLAS DEBEN AÑADIRSE AL DBSET
-    
-    ctx.Castillos.AddRange(c1,c2);
-    ctx.Reyes.AddRange(r1,r2,r3,r4,r5,r6);
-    ctx.Goombas.AddRange(g1,g2,g3,g4);
-
-    ctx.SaveChanges();
     
     
     //CONSULTA 1: TODOS LOS CASTILLOS CON SUS GOOMBAS
